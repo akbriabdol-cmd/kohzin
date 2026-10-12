@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080a11"><meta name="description" content="کوه‌زین؛ ویرایش ویدیو، تنظیم رنگ، متن آهنگ و آموزش فیلم‌برداری.">
+<link rel="manifest" href="/manifest.json"><link rel="icon" type="image/png" sizes="192x192" href="/icons/kohzin-192.png">
+<link rel="apple-touch-icon" href="/icons/kohzin-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>KOHZIN — ادیتور حرفه‌ای</title>
+<style>
+:root{--bg:#080a0f;--panel:#11151d;--panel2:#181e28;--line:#29313e;--text:#f5f7fb;--muted:#8993a3;--accent:#8b7cff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#20263a 0,#080a0f 42%);color:var(--text);font-family:Tahoma,Arial,sans-serif}
+.app{max-width:1180px;margin:auto;padding:14px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 4px 16px}.brand{font-weight:900;font-size:22px}.brand span{color:var(--accent)}.sub{font-size:11px;color:var(--muted);margin-top:3px}
+button,select,input{font:inherit}.btn{border:1px solid var(--line);background:var(--panel2);color:#fff;border-radius:11px;padding:10px 14px;cursor:pointer;font-weight:700}.btn.primary{background:#fff;color:#0a0c10;border-color:#fff}.btn:disabled{opacity:.35}
+.workspace{display:grid;grid-template-columns:1fr 310px;gap:14px}.card{background:#0e1219dd;border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 18px 60px #0005}
+.stage{min-height:520px;display:flex;align-items:center;justify-content:center;background:#07090d;border-radius:14px;overflow:hidden;position:relative}.stage img,.stage video{max-width:100%;max-height:620px;object-fit:contain}.empty{text-align:center;color:var(--muted)}.empty b{display:block;color:#fff;font-size:17px;margin:8px}
+.drop{border:1px dashed #394252;padding:26px;border-radius:15px;cursor:pointer}
+.tools{display:flex;gap:7px;overflow:auto;padding:10px 0 2px}.tool{white-space:nowrap}.panel h3{font-size:14px;margin:2px 0 13px}.row{margin:12px 0}.row label{display:flex;justify-content:space-between;color:#b9c1ce;font-size:12px;margin-bottom:7px}input[type=range]{width:100%;accent-color:#a394ff}
+select{width:100%;background:#0b0e13;color:#fff;border:1px solid var(--line);padding:10px;border-radius:10px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.presets{display:grid;grid-template-columns:1fr 1fr;gap:7px}.preset{padding:10px;border:1px solid var(--line);border-radius:10px;background:#151a23;color:#fff;cursor:pointer;text-align:center;font-size:12px}
+.bottom{display:flex;justify-content:space-between;gap:8px;margin-top:12px}.timeline{margin-top:14px;height:64px;background:#0b0e13;border:1px solid var(--line);border-radius:12px;display:flex;align-items:center;padding:8px;gap:6px;overflow:hidden}.clip{height:45px;min-width:100px;background:linear-gradient(135deg,#252d3a,#151a22);border-radius:8px;border:1px solid #394250;display:flex;align-items:center;justify-content:center;font-size:11px;color:#b8c0cc}
+
+/* KOHZIN voice assistant — consistent thin-line icon system */
+.kicon{width:19px;height:19px;display:inline-block;vertical-align:middle;flex:0 0 auto;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tool{display:inline-flex;align-items:center;gap:8px}.btn .kicon{width:18px;height:18px}
+#voiceLauncher{position:fixed;z-index:900;bottom:22px;left:20px;width:60px;height:60px;border:1px solid #b9adff;background:linear-gradient(145deg,#a99cff,#7160e8);color:#fff;border-radius:50%;box-shadow:0 10px 35px #6f60e855;display:grid;place-items:center;cursor:pointer}
+#voiceLauncher .kicon{width:27px;height:27px}#voicePanel{position:fixed;z-index:1000;left:18px;bottom:94px;width:min(390px,calc(100vw - 36px));height:min(600px,calc(100dvh - 125px));display:none;flex-direction:column;background:#0f131b;border:1px solid #333d4e;border-radius:22px;box-shadow:0 25px 80px #000a;overflow:hidden;color:#f5f7fb;font-family:Tahoma,Arial,sans-serif}
+#voicePanel.open{display:flex}.voice-head{display:flex;align-items:center;gap:10px;padding:14px;border-bottom:1px solid #29313e;background:#151a24}.voice-orb{width:38px;height:38px;border-radius:14px;background:#26223f;color:#b8adff;display:grid;place-items:center}.voice-head-main{flex:1}.voice-head-title{font-weight:800;font-size:14px}.voice-head-sub{font-size:11px;color:#929bad;margin-top:4px}.voice-icon-btn{width:36px;height:36px;border-radius:11px;border:1px solid #333d4e;background:#1b2230;color:#e9ecf4;display:grid;place-items:center;cursor:pointer}.voice-messages{padding:14px;overflow:auto;flex:1;display:flex;flex-direction:column;gap:10px}.voice-welcome{margin:auto 0;text-align:center;color:#9ba5b6;font-size:13px;line-height:1.9}.voice-welcome strong{display:block;color:#f4f5fb;font-size:16px;margin-bottom:6px}.voice-msg{max-width:88%;padding:11px 13px;border-radius:15px;font-size:13px;line-height:1.9;white-space:pre-wrap;overflow-wrap:anywhere}.voice-msg.user{align-self:flex-start;background:#292445;border:1px solid #40376b}.voice-msg.assistant{align-self:flex-end;background:#1a222d;border:1px solid #303a49}.voice-msg .speak-one{border:0;background:transparent;color:#b9adff;padding:5px 0 0;display:flex;gap:6px;align-items:center;cursor:pointer;font:inherit;font-size:11px}.voice-status{font-size:11px;color:#a8b0c0;padding:0 14px 8px;min-height:18px}.voice-compose{display:flex;align-items:flex-end;gap:8px;padding:11px;border-top:1px solid #29313e;background:#121720}.voice-compose textarea{flex:1;min-width:0;max-height:110px;resize:vertical;border:1px solid #353f50;background:#090d13;color:#fff;border-radius:14px;padding:11px;font:inherit;font-size:13px;outline:none}.voice-compose textarea:focus{border-color:#9385ff}.voice-round{width:42px;height:42px;flex:0 0 42px;border-radius:14px;border:1px solid #3a4354;background:#222a37;color:#fff;display:grid;place-items:center;cursor:pointer}.voice-round.send{background:#a89aff;color:#151122;border-color:#a89aff}.voice-round.active{background:#a93f54;border-color:#d36a7c}.voice-foot{padding:0 12px 10px;color:#7e899b;font-size:10px;line-height:1.7}.voice-msg.typing{opacity:.75}.voice-pulse{animation:voicepulse 1.2s infinite}@keyframes voicepulse{50%{box-shadow:0 0 0 8px #a99cff20}}
+@media(max-width:480px){#voiceLauncher{left:14px;bottom:16px;width:56px;height:56px}#voicePanel{left:8px;bottom:82px;width:calc(100vw - 16px);height:min(620px,calc(100dvh - 100px))}}
+
+@media(max-width:820px){.workspace{grid-template-columns:1fr}.panel{order:-1}.stage{min-height:390px}.top{flex-wrap:wrap}}
+
+/* KOHZIN Studio refresh: modern mobile-first editor */
+:root{--bg:#070910;--panel:#10141f;--panel2:#171d2a;--line:#2a3244;--text:#f7f8fc;--muted:#9aa4b7;--accent:#a99aff;--accent2:#7764f5}
+body{background:radial-gradient(ellipse at 50% -20%,#302c57 0,transparent 44%),linear-gradient(180deg,#080a11,#070910 55%);letter-spacing:0}
+.app{max-width:1280px;padding:clamp(10px,2vw,24px)}
+.top{position:sticky;top:0;z-index:30;margin:0 -4px 14px;padding:12px 14px;background:#0b0e17eF;backdrop-filter:blur(18px);border:1px solid #252c3b;border-radius:18px}
+.brand{font-size:24px;letter-spacing:-.5px}.brand span{font-size:12px;letter-spacing:2px;background:linear-gradient(90deg,#d9d3ff,#8e7cff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.card{background:linear-gradient(155deg,#111622f5,#0c1019f5);border:1px solid #252d3d;border-radius:22px;padding:clamp(12px,2vw,20px);box-shadow:0 18px 70px #0004}
+.workspace{grid-template-columns:minmax(0,1fr) minmax(280px,340px);gap:16px}
+.stage{min-height:clamp(310px,55vh,640px);background:radial-gradient(ellipse at center,#161b28,#080a10 72%);border:1px solid #242c3b;border-radius:18px}
+.btn{border:1px solid #30394c;background:linear-gradient(180deg,#202737,#171d29);border-radius:13px;min-height:42px;padding:10px 13px;transition:transform .15s,border-color .15s,background .15s}
+.btn:active,.preset:active{transform:scale(.98)}.btn:hover,.preset:hover{border-color:#9182ff}
+.btn.primary{background:linear-gradient(135deg,#d9d2ff,#9887ff);border-color:#b7aaff;color:#151225;box-shadow:0 5px 20px #8d7cff22}
+.tools{gap:8px;padding:13px 0 4px;scrollbar-width:thin}.tool{flex:0 0 auto;min-height:46px;border-radius:14px}
+.panel h3{font-size:15px;letter-spacing:-.2px;margin:3px 0 15px}.sub{line-height:1.85}
+input:not([type=range]):not([type=file]),textarea,select{outline:none;transition:border-color .15s,box-shadow .15s}input:focus,textarea:focus,select:focus{border-color:#9486ff!important;box-shadow:0 0 0 3px #9a8cff19}
+.row{margin:15px 0}.row label{font-size:12px;color:#c2c9d7}
+.timeline{height:76px;border-radius:15px;background:linear-gradient(90deg,#0b0e16,#141a27);border-color:#2a3242}.clip{height:52px;border-radius:10px;background:linear-gradient(135deg,#2b3150,#171d2a);border-color:#555078}
+.presets{gap:9px}.preset{border-radius:13px;padding:12px 8px;background:linear-gradient(150deg,#1c2231,#121722);border-color:#2d3547;min-height:43px}
+.drop{border-color:#6d60b4;background:#16162a;border-radius:16px;padding:22px;margin-top:14px}
+#lyricsText{min-height:150px;line-height:1.9!important;border-radius:14px!important;background:#090c14!important;border-color:#30394b!important}
+.lyric-style-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
+.lyric-style{min-height:72px;border:1px solid #30384b;border-radius:13px;padding:8px;background:#131824;color:#fff;text-align:center;cursor:pointer;display:flex;flex-direction:column;justify-content:center;gap:5px}
+.lyric-style small{font-size:10px;color:#9da7ba}.lyric-style.active{border-color:#a99aff;box-shadow:inset 0 0 0 1px #a99aff55;background:#211e38}
+.lyric-preview{position:relative;min-height:150px;display:flex;align-items:center;justify-content:center;text-align:center;padding:18px;border:1px solid #35344f;border-radius:16px;overflow:hidden;background:radial-gradient(ellipse at 50% 0,#3b315c,#10131d 70%);margin:10px 0 14px}
+.lyric-preview:before{content:"KOHZIN • LYRIC PREVIEW";position:absolute;top:10px;left:12px;font:9px Arial,sans-serif;letter-spacing:1.5px;color:#a9a4c6}
+#lyricPreviewText{max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65;font-size:23px;font-weight:800;color:#fff;text-shadow:0 3px 14px #000;direction:auto}
+.lyric-controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}.lyric-controls .row{margin:6px 0}.lyric-controls input[type=color]{width:100%;height:42px;border:1px solid #30394b;background:#0b0e13;border-radius:10px;padding:4px}
+#text .text-preview{margin-top:12px;padding:16px;border:1px solid #34304f;border-radius:14px;background:linear-gradient(135deg,#26213d,#10141d);text-align:center;white-space:pre-wrap;line-height:1.8;font-weight:800}
+@media(max-width:820px){.workspace{grid-template-columns:1fr}.panel{order:0}.top{position:relative;flex-wrap:wrap}.stage{min-height:340px}.tools{margin-inline:-2px}.panel{padding:14px}}
+@media(max-width:420px){.app{padding:8px}.top{padding:11px}.brand{font-size:21px}.btn{padding:9px 10px;font-size:12px}.tool{font-size:12px}.lyric-preview{min-height:135px}.lyric-controls{grid-template-columns:1fr 1fr}}
+
+</style>
+</head>
+<body>
+<svg aria-hidden="true" width="0" height="0" style="position:absolute;overflow:hidden"><symbol id="i-adjust" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol><symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 5h16l-6 7v5l-4 2v-7z"/></symbol><symbol id="i-crop" viewBox="0 0 24 24"><path d="M8 4v12a2 2 0 0 0 2 2h10M4 8h12a2 2 0 0 1 2 2v10"/></symbol><symbol id="i-speed" viewBox="0 0 24 24"><path d="M12 3v3M4.9 6l2.1 2.1M3 13h3M18 8.1 20 6M12 21a8 8 0 1 0-8-8"/><path d="m12 13 4-4"/></symbol><symbol id="i-text" viewBox="0 0 24 24"><path d="M4 6V4h16v2M12 4v16M8 20h8"/></symbol><symbol id="i-audio" viewBox="0 0 24 24"><path d="M3 10v4M7 6v12M11 3v18M15 7v10M19 10v4M22 11v2"/></symbol><symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol><symbol id="i-learn" viewBox="0 0 24 24"><path d="m3 8 9-5 9 5-9 5zM6 10v6c4 4 8 4 12 0v-6M21 8v7"/></symbol><symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 7h4l2-3h4l2 3h4a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/><circle cx="12" cy="13" r="4"/></symbol><symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/></symbol><symbol id="i-send" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4zM22 2 11 13"/></symbol><symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 10v4h4l5 4V6l-5 4zM17 9a5 5 0 0 1 0 6M19 5a10 10 0 0 1 0 14"/></symbol><symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol><symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol><symbol id="i-chat" viewBox="0 0 24 24"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l-2 2v-9.5A7.5 7.5 0 0 1 10.5 4H12a8 8 0 0 1 8 7.5z"/><path d="M8 11h8M8 14h5"/></symbol></svg>
+<div class="app">
+<header class="top"><div><div class="brand">کوه‌زین <span>KOHZIN</span></div><div class="sub">ادیتور عکس و ویدیو — نسخه آزمایشی</div></div><div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap"><select id="uiLanguage" aria-label="زبان برنامه" style="width:auto;max-width:150px"><option value="fa">فارسی / دری</option><option value="en">English</option><option value="ar">العربية</option><option value="tr">Türkçe</option><option value="ur">اردو</option><option value="hi">हिन्दी</option><option value="az">Azərbaycanca</option></select><button class="btn" id="new"><svg class="kicon"><use href="#i-chat"/></svg> پروژه جدید</button> <button class="btn primary" id="export"><svg class="kicon"><use href="#i-send"/></svg> خروجی</button></div></header>
+
+<div class="workspace">
+<main class="card">
+<div class="stage" id="stage"><div class="empty" id="empty"><div style="font-size:44px">✦</div><b>شروع یک پروژه</b><div class="drop" id="drop">📁 انتخاب عکس یا ویدیو</div><input id="file" type="file" accept="image/*,video/*" hidden></div></div>
+<div class="tools">
+<button class="btn tool" data-tool="adjust"><svg class="kicon"><use href="#i-adjust"/></svg> تنظیم</button>
+<button class="btn tool" data-tool="filters"><svg class="kicon"><use href="#i-filter"/></svg> فیلتر</button>
+<button class="btn tool" data-tool="crop"><svg class="kicon"><use href="#i-crop"/></svg> کادر</button>
+<button class="btn tool" data-tool="speed"><svg class="kicon"><use href="#i-speed"/></svg> سرعت</button>
+<button class="btn tool" data-tool="text"><svg class="kicon"><use href="#i-text"/></svg> متن</button>
+<button class="btn tool" data-tool="audio"><svg class="kicon"><use href="#i-audio"/></svg> صدا</button>
+<button class="btn tool" data-tool="lyrics"><svg class="kicon"><use href="#i-music"/></svg> آهنگ به متن</button>
+<button class="btn tool" data-tool="learn"><svg class="kicon"><use href="#i-learn"/></svg> آموزش ادیت</button>
+<button class="btn tool" data-tool="director"><svg class="kicon"><use href="#i-camera"/></svg> مربی فیلمبرداری</button>
+<button class="btn tool primary" data-tool="generateVideo"><svg class="kicon"><use href="#i-camera"/></svg> ساخت ویدیو با هوش مصنوعی</button>
+</div>
+<div class="timeline" id="timeline"><div class="clip">کلیپ اصلی</div></div>
+</main>
+
+<aside class="card panel">
+<div id="generateVideo" hidden>
+<h3>🎬 ساخت ویدیوی واقعی با هوش مصنوعی</h3>
+<p class="sub" style="line-height:1.9">ایده‌ات را بنویس؛ سرویس تولید ویدیو باید سوژه، حرکت و محیط را بسازد. متن درخواست روی تصویر چاپ نمی‌شود. صدا در صورت پشتیبانی مدل تولید می‌شود.</p>
+<div class="row"><label for="videoPrompt">توضیح ویدیو</label><textarea id="videoPrompt" rows="5" maxlength="1800" placeholder="مثلاً: یک پسر جوان با لباس ساده در مسیر جنگل سرسبز قدم می‌زند؛ دوربین از پشت آرام او را دنبال می‌کند، نور آفتاب از میان درختان می‌تابد و صدای پرندگان و باد شنیده می‌شود." style="width:100%;padding:11px;background:#0b0e13;color:white;border:1px solid var(--line);border-radius:10px;font:inherit;resize:vertical"></textarea></div>
+<div class="grid"><div class="row"><label for="genRatio">کادر ویدیو</label><select id="genRatio"><option value="9:16">عمودی 9:16 — ریلز</option><option value="16:9">افقی 16:9 — یوتیوب</option><option value="1:1">مربعی 1:1</option></select></div><div class="row"><label for="genDuration">مدت</label><select id="genDuration"><option value="5">۵ ثانیه</option><option value="10">۱۰ ثانیه</option><option value="15">۱۵ ثانیه</option></select></div></div>
+<div class="row"><label for="genModel">موتور تولید ویدیو</label><select id="genModel"><option value="standard">Kling V3 Standard — کیفیت و حرکت</option><option value="turbo">Kling V3 Turbo — تولید سریع‌تر</option></select><p class="sub" style="line-height:1.7;margin-top:6px">هر دو گزینه نیازمند فعال بودن سرویس روی سرور هستند. خروجی و هزینه به مدل و سرویس بستگی دارد.</p></div>
+<label style="display:flex;gap:8px;align-items:center;margin:10px 0"><input id="genAudio" type="checkbox" checked style="width:auto"> تلاش برای تولید صدای متناسب با ویدیو</label>
+<button class="btn primary" id="generateVideoBtn" style="width:100%">✨ ساخت ویدیوی واقعی</button>
+<div class="row" style="margin-top:12px"><label for="apiBaseUrl">آدرس سرور هوش مصنوعی (فقط اگر سرور جداست)</label><input id="apiBaseUrl" type="url" inputmode="url" placeholder="مثلاً https://your-kohzin-api.example.com" autocomplete="url" style="width:100%;padding:11px;background:#0b0e13;color:white;border:1px solid var(--line);border-radius:10px;font:inherit"><button class="btn" id="saveApiBase" type="button" style="margin-top:7px">ذخیره و آزمایش اتصال</button></div>
+<p class="sub" id="generateVideoStatus" role="status" style="line-height:1.8;margin-top:10px">در حال بررسی اتصال سرور کوه‌زین…</p>
+<p class="sub" style="line-height:1.8">نکته: صدای طبیعی داخل ویدیو به قابلیت مدل بستگی دارد؛ تولید گفتار فارسی/دری داخل خود ویدیو تضمین نیست. دکمهٔ «شنیدن پاسخ» در دستیار، صدای گوشی را برای خواندن متن استفاده می‌کند.</p>
+<div id="generatedVideoResult" hidden style="margin-top:12px"><video id="generatedVideoPlayer" controls playsinline style="width:100%;max-height:420px;border-radius:12px;background:#050608"></video><a id="generatedVideoDownload" class="btn" href="#" target="_blank" rel="noopener" style="display:block;text-align:center;margin-top:8px">بازکردن / دریافت ویدیوی ساخته‌شده</a><details style="margin-top:8px"><summary>متن نهایی دستور تولید</summary><p id="generatedPromptText" class="sub" style="line-height:1.8;overflow-wrap:anywhere"></p></details></div>
+</div>
+<div id="director" hidden>
+<h3>🎬 مربی هوشمند فیلمبرداری</h3>
+<p class="sub" style="line-height:1.9">اول مشخص کن بیننده چه چیزی می‌خواهد ببیند؛ بعد سبک را انتخاب کن. مربی برایت برنامهٔ نماها، زمان هر نما و راهنمایی هنگام فیلمبرداری می‌سازد.</p>
+<div class="row"><label>۱. بیننده از ویدیوی تو چه می‌خواهد؟</label><select id="viewerGoal"><option value="story">یک داستان کوتاه و جذاب</option><option value="nature">طبیعت، کوه و آب</option><option value="work">کار روزانه و زندگی واقعی</option><option value="travel">سفر و مسیر رفت‌وآمد</option><option value="person">صحبت مستقیم با دوربین</option><option value="product">معرفی یک وسیله یا محصول</option><option value="mood">ویدیوی احساسی و آرام</option><option value="viral">ویدیوی کوتاه و پرانرژی</option></select></div>
+<div class="row"><label>۲. سبک‌های موجود در کوه‌زین</label><select id="filmStyle"><option value="cinematic">Cinematic — سینمایی</option><option value="natural">Natural — طبیعی و واقعی</option><option value="vlog">Vlog — روزمره و خودمانی</option><option value="documentary">Documentary — مستند</option><option value="story">Storytelling — داستان‌گویی</option><option value="slow">Slow / Emotional — آرام و احساسی</option><option value="dynamic">Dynamic — سریع و پرتحرک</option><option value="talking">Talking Head — صحبت رو به دوربین</option></select></div>
+<div class="row"><label>۳. خروجی برای کجا است؟</label><select id="filmPlatform"><option value="vertical">عمودی 9:16 — Reels / TikTok / Shorts</option><option value="youtube">افقی 16:9 — YouTube</option><option value="square">مربعی 1:1 — پست</option></select></div>
+<div class="row"><label>۴. مدت کل ویدیو</label><select id="filmLength"><option value="15">۱۵ ثانیه</option><option value="30" selected>۳۰ ثانیه</option><option value="45">۴۵ ثانیه</option><option value="60">۶۰ ثانیه</option></select></div>
+<div class="row"><label>۵. سطح تجربه</label><select id="filmLevel"><option value="beginner">تازه‌کار — دستور ساده و واضح</option><option value="intermediate">متوسط — حرکت‌ها و نماهای متنوع</option></select></div>
+<button class="btn primary" id="makeFilmPlan" style="width:100%">✨ برنامه فیلمبرداری من را بساز</button>
+<div id="filmPlan" style="margin-top:12px;line-height:1.9;font-size:13px"></div>
+<div class="row"><label>پیش‌نمایش دوربین گوشی</label><video id="cameraPreview" autoplay muted playsinline style="width:100%;display:none;border-radius:12px;background:#050608;max-height:360px"></video><div class="grid"><button class="btn" id="startCamera"><svg class="kicon"><use href="#i-camera"/></svg> روشن‌کردن دوربین</button><button class="btn" id="stopCamera"><svg class="kicon"><use href="#i-stop"/></svg> خاموش‌کردن</button></div><p class="sub">اگر دوربین باز نشد، فایل را از یک سایت HTTPS یا محیط امن باز کن و اجازهٔ Camera را بده. دوربین فقط پس از زدن دکمه فعال می‌شود.</p></div>
+<div id="shotCoach" style="padding:12px;border:1px solid var(--line);border-radius:12px;background:#111722">بعد از ساخت برنامه، دکمهٔ «شروع راهنمای نماها» را بزن تا هر نما را جداگانه با زمان مشخص تمرین کنی.</div>
+<button class="btn primary" id="nextShot" style="width:100%;margin-top:8px" disabled><svg class="kicon"><use href="#i-camera"/></svg> شروع راهنمای نماها</button>
+</div>
+<div id="learn" hidden>
+<h3 data-i18n="learnTitle">🎓 آموزش قدم‌به‌قدم ادیت</h3>
+<p class="sub" data-i18n="learnIntro">یک درس انتخاب کن؛ دستورها را انجام بده و نتیجه را روی عکس تمرین کن.</p>
+<div class="row"><label data-i18n="lessonLabel">درس آموزشی</label><select id="lessonSelect"><option value="start">۱. شروع پروژه</option><option value="light">۲. نور و روشنایی</option><option value="color">۳. رنگ و کنتراست</option><option value="filter">۴. فیلتر سینمایی</option><option value="frame">۵. کادر مناسب شبکه‌ها</option><option value="text">۶. متن روی کلیپ</option><option value="music">۷. موسیقی و ریتم</option><option value="export">۸. خروجی گرفتن</option></select></div>
+<div id="lessonContent" style="line-height:2;font-size:13px;background:#111722;border:1px solid var(--line);border-radius:12px;padding:12px"></div>
+<button class="btn primary" id="lessonAction" style="width:100%;margin-top:10px">تمرین این درس</button>
+<p class="sub" id="lessonStatus">نکته: بعضی ابزارهای ویدیویی این نسخه هنوز آزمایشی‌اند.</p>
+</div>
+<div id="adjust">
+<h3>🎚️ تنظیم حرفه‌ای</h3>
+<div class="row"><label>روشنایی <span id="vB">0</span></label><input id="brightness" type="range" min="-60" max="60" value="0"></div>
+<div class="row"><label>کنتراست <span id="vC">0</span></label><input id="contrast" type="range" min="-60" max="60" value="0"></div>
+<div class="row"><label>اشباع <span id="vS">0</span></label><input id="saturation" type="range" min="-60" max="60" value="0"></div>
+<div class="row"><label>گرمی <span id="vW">0</span></label><input id="warmth" type="range" min="-40" max="40" value="0"></div>
+<div class="row"><label>شارپنس <span id="vH">0</span></label><input id="sharp" type="range" min="0" max="30" value="0" title="افزایش کنتراست لبه‌ها به‌صورت تقریبی؛ جزئیات ازدست‌رفته را بازیابی نمی‌کند"></div>
+<button class="btn primary" id="auto"><svg class="kicon"><use href="#i-adjust"/></svg> ادیت هوشمند</button>
+</div>
+<div id="filters" hidden><h3>🎨 استایل</h3><div class="presets">
+<button class="preset" data-p="natural">Natural</button><button class="preset" data-p="cinematic">Cinematic</button>
+<button class="preset" data-p="warm">Warm</button><button class="preset" data-p="night">Night</button>
+<button class="preset" data-p="vivid">Vivid</button><button class="preset" data-p="mono">B&W</button>
+</div></div>
+<div id="crop" hidden><h3>▣ نسبت تصویر</h3><select id="ratio"><option value="original">اصلی</option><option value="9:16">9:16 — Reels / TikTok</option><option value="16:9">16:9 — YouTube</option><option value="1:1">1:1 — Instagram</option><option value="4:5">4:5 — Feed</option></select></div>
+<div id="speed" hidden><h3>⚡ سرعت ویدیو</h3><select><option>0.5x</option><option>1x</option><option>1.5x</option><option>2x</option></select><p class="sub">کنترل واقعی سرعت ویدیو در موتور رندر نسخه بعدی اضافه می‌شود.</p></div>
+<div id="text" hidden><h3>T متن روی ویدیو</h3><input id="caption" placeholder="متن خود را بنویس..." style="width:100%;padding:11px;background:#0b0e13;color:white;border:1px solid var(--line);border-radius:10px"><div class="text-preview" id="captionPreview">پیش‌نمایش نوشتهٔ تو</div><p class="sub">این بخش فعلاً پیش‌نمایش نوشته را نشان می‌دهد؛ چسباندن نهایی متن به فایل ویدیویی به موتور خروجی ویدیو نیاز دارد.</p></div>
+<div id="audio" hidden><h3>♫ موسیقی</h3><input id="audioFile" type="file" accept="audio/*" style="width:100%;font-size:12px"><audio id="audioPreview" controls style="display:none;width:100%;margin-top:10px"></audio><p class="sub">می‌توانی فایل صدا را انتخاب و گوش کنی. ترکیب صدا با ویدیو و خروجی نهایی هنوز در این نسخه فعال نیست.</p></div>
+<div id="lyrics" hidden>
+<h3>🎵 تبدیل آهنگ به متن</h3>
+<p class="sub" style="line-height:1.9">فایل آهنگ را انتخاب کن و «تبدیل خودکار» را بزن. اتصال هوش مصنوعی از طریق سرور امن کوه‌زین انجام می‌شود؛ نیازی به کلید شخصی نیست.</p>
+<div class="row"><label>زبان آهنگ</label><select id="songLanguage"><option value="fa">فارسی / دری</option><option value="en">انگلیسی</option><option value="tr">ترکی</option><option value="ar">عربی</option><option value="ur">اردو</option><option value="hi">هندی</option></select></div>
+<div class="row"><label>انتخاب فایل آهنگ</label><input id="songFile" type="file" accept="audio/*" style="width:100%;font-size:12px"></div>
+<audio id="songPlayer" controls style="width:100%;margin:8px 0;display:none"></audio>
+<div class="row"><label>متن آهنگ — قابل اصلاح</label><textarea id="lyricsText" placeholder="بعد از تبدیل، متن اینجا می‌آید. اگر کلمه‌ای اشتباه بود اصلاحش کن..." rows="7" style="width:100%;padding:11px;background:#0b0e13;color:white;border:1px solid var(--line);border-radius:10px;font:inherit;resize:vertical"></textarea></div>
+<div class="row"><label>انتخاب فونت و استایل متن</label><div class="lyric-style-grid" id="lyricStyleGrid">
+<button class="lyric-style active" data-lyric-style="cinema"><span style="font-family:Tahoma,Arial;font-weight:900">سینمایی</span><small>سایهٔ نرم • درشت</small></button>
+<button class="lyric-style" data-lyric-style="bold"><span style="font-family:Arial;font-weight:900;letter-spacing:-1px">ضخیم</span><small>خوانا و قوی</small></button>
+<button class="lyric-style" data-lyric-style="elegant"><span style="font-family:Georgia,serif;font-weight:500">ظریف</span><small>حس آرام</small></button>
+<button class="lyric-style" data-lyric-style="neon"><span style="font-family:Arial;font-weight:900;color:#c7b8ff">نئون</span><small>درخشان</small></button>
+<button class="lyric-style" data-lyric-style="outline"><span style="font-family:Tahoma,Arial;font-weight:900">حاشیه‌دار</span><small>واضح روی تصویر</small></button>
+<button class="lyric-style" data-lyric-style="minimal"><span style="font-family:Tahoma,Arial;font-weight:500">مینیمال</span><small>ساده و تمیز</small></button>
+</div></div>
+<div class="lyric-preview"><div id="lyricPreviewText">متن آهنگ تو اینجا دیده می‌شود</div></div>
+<div class="lyric-controls">
+<div class="row"><label for="lyricSize">اندازهٔ نوشته</label><input id="lyricSize" type="range" min="14" max="42" value="23" style="width:100%;accent-color:#a99aff"></div>
+<div class="row"><label for="lyricColor">رنگ نوشته</label><input id="lyricColor" type="color" value="#ffffff"></div>
+<div class="row"><label for="lyricAlign">جای متن</label><select id="lyricAlign"><option value="center">وسط</option><option value="right">راست</option><option value="left">چپ</option></select></div>
+<div class="row"><label for="lyricLine">شکستن جمله‌ها</label><select id="lyricLine"><option value="auto">خودکار و کوتاه</option><option value="manual">حفظ خط‌های متن</option></select></div>
+</div>
+<div class="grid"><button class="btn primary" id="transcribeLyrics"><svg class="kicon"><use href="#i-music"/></svg> تبدیل خودکار به متن</button><button class="btn" id="copyLyrics"><svg class="kicon"><use href="#i-text"/></svg> کپی متن</button><button class="btn" id="downloadLyrics"><svg class="kicon"><use href="#i-send"/></svg> ذخیره متن</button></div>
+<p id="lyricsStatus" class="sub" style="margin-top:10px">فایلی انتخاب نشده.</p>
+</div>
+<div class="bottom"><button class="btn" id="undo"><svg class="kicon"><use href="#i-adjust"/></svg> بازنشانی تنظیمات</button><button class="btn" id="save"><svg class="kicon"><use href="#i-send"/></svg> ذخیره پروژه</button></div>
+<div id="status" class="sub" style="margin-top:12px">فایلی انتخاب نشده.</div>
+</aside>
+</div></div>
+
+
+<button id="voiceLauncher" type="button" aria-label="گفت‌وگو با هوش مصنوعی کوه‌زین" title="با کوه‌زین صحبت کن"><svg class="kicon"><use href="#i-chat"/></svg></button>
+<section id="voicePanel" aria-label="دستیار صوتی کوه‌زین">
+ <header class="voice-head"><div class="voice-orb"><svg class="kicon"><use href="#i-chat"/></svg></div><div class="voice-head-main"><div class="voice-head-title">دستیار هوشمند کوه‌زین</div><div class="voice-head-sub">پیام بده یا با صدایت صحبت کن</div></div><button class="voice-icon-btn" id="voiceStop" title="توقف صدا" aria-label="توقف صدا"><svg class="kicon"><use href="#i-stop"/></svg></button><button class="voice-icon-btn" id="voiceClose" title="بستن" aria-label="بستن"><svg class="kicon"><use href="#i-close"/></svg></button></header>
+ <div class="voice-messages" id="voiceMessages"><div class="voice-welcome"><strong>سلام! من دستیار کوه‌زین هستم.</strong>می‌توانی سؤال را تایپ کنی یا دکمهٔ میکروفون را بزنی تا صحبت کنی. برای شنیدن پاسخ، دکمهٔ بلندگو را بزن.</div></div>
+ <div class="voice-status" id="voiceStatus" role="status">آمادهٔ گفت‌وگو</div>
+ <form class="voice-compose" id="voiceForm"><button class="voice-round" id="voiceMic" type="button" title="صحبت کن" aria-label="صحبت کن"><svg class="kicon"><use href="#i-mic"/></svg></button><textarea id="voiceInput" rows="1" placeholder="پیامت را بنویس..." aria-label="پیام شما"></textarea><button class="voice-round send" type="submit" title="ارسال پیام" aria-label="ارسال پیام"><svg class="kicon"><use href="#i-send"/></svg></button></form>
+ <div class="voice-foot">برای صحبت‌کردن، اجازهٔ میکروفون را بده. صدای پاسخ به پشتیبانی مرورگر و زبان‌های نصب‌شده بستگی دارد.</div>
+</section>
+
+<script>
+let file=null,img=null,url=null,canvas=null,audioUrl=null,songUrl=null,videoEl=null,rendering=false;
+const $=x=>document.getElementById(x);
+function choose(){ $('file').click() }
+$('drop').onclick=choose;$('file').onchange=e=>load(e.target.files[0]);
+function load(f){
+ if(!f)return;
+ if(!f.type.startsWith('image/')&&!f.type.startsWith('video/')){$('status').textContent='این نوع فایل پشتیبانی نمی‌شود؛ عکس یا ویدیو انتخاب کن.';return}
+ file=f;img=null;canvas=null;videoEl=null;
+ if(url)URL.revokeObjectURL(url);
+ url=URL.createObjectURL(f);
+ $('empty').style.display='none';$('stage').innerHTML='';
+ if(f.type.startsWith('image/')){
+  $('status').textContent='در حال بارگذاری عکس...';
+  img=new Image();img.onload=()=>{render();saveProjectState(false)};img.onerror=()=>{$('status').textContent='بازکردن عکس ناموفق بود؛ یک فایل تصویر دیگر انتخاب کن.'};img.src=url;
+ } else {
+  videoEl=document.createElement('video');videoEl.src=url;videoEl.controls=true;videoEl.playsInline=true;videoEl.preload='metadata';videoEl.style.maxWidth='100%';videoEl.style.maxHeight='620px';videoEl.style.width='100%';
+  videoEl.onloadedmetadata=()=>{$('status').textContent='ویدیو آماده است. می‌توانی پیش‌نمایش و خروجی آزمایشی WEBM بگیری.'};
+  videoEl.onerror=()=>{$('status').textContent='بازکردن ویدیو ناموفق بود؛ فایل دیگری انتخاب کن.'};
+  $('stage').appendChild(videoEl);
+ }
+}
+function render(){
+ if(!img||!img.naturalWidth||!img.naturalHeight)return;
+ canvas=document.createElement('canvas');let w=img.naturalWidth,h=img.naturalHeight,r=$('ratio').value,cw=w,ch=h;
+ if(r==='9:16'){cw=Math.min(w,h*9/16);ch=cw*16/9}if(r==='16:9'){ch=Math.min(h,w*9/16);cw=ch*16/9}if(r==='1:1'){cw=ch=Math.min(w,h)}if(r==='4:5'){cw=Math.min(w,h*.8);ch=cw*1.25}
+ canvas.width=Math.max(1,Math.round(cw));canvas.height=Math.max(1,Math.round(ch));
+ const ctx=canvas.getContext('2d'),sx=(w-cw)/2,sy=(h-ch)/2;
+ const b=+$('brightness').value,c=+$('contrast').value,s=+$('saturation').value,heat=+$('warmth').value,sharp=+$('sharp').value;
+ // Sharpness is a light local-contrast approximation in this browser-only preview, not detail recovery.
+ ctx.filter=`brightness(${100+b}%) contrast(${Math.max(1,100+c+sharp*.45)}%) saturate(${100+s}%)`;
+ ctx.drawImage(img,sx,sy,cw,ch,0,0,canvas.width,canvas.height);
+ if(heat!==0){ctx.save();ctx.globalCompositeOperation='soft-light';ctx.fillStyle=heat>0?`rgba(255,150,65,${Math.min(.22,heat/220)})`:`rgba(75,145,255,${Math.min(.22,Math.abs(heat)/220)})`;ctx.fillRect(0,0,canvas.width,canvas.height);ctx.restore()}
+ $('stage').innerHTML='';const o=new Image();o.alt='پیش‌نمایش عکس ویرایش‌شده';o.src=canvas.toDataURL('image/jpeg',.95);$('stage').appendChild(o);$('status').textContent='پیش‌نمایش عکس آماده است. برای ذخیره، دکمهٔ خروجی را بزن.';
+}
+['brightness','contrast','saturation','warmth','sharp'].forEach(id=>$(id).oninput=()=>{let map={brightness:'vB',contrast:'vC',saturation:'vS',warmth:'vW',sharp:'vH'};$(map[id]).textContent=$(id).value;if(img)render();saveProjectState(false)});
+$('ratio').onchange=()=>{if(img)render();saveProjectState(false)};
+$('auto').onclick=()=>{ $('brightness').value=4;$('contrast').value=18;$('saturation').value=10;$('warmth').value=5;$('sharp').value=5;['vB','vC','vS','vW','vH'].forEach((id,i)=>$(id).textContent=[4,18,10,5,5][i]);if(img)render();$('status').textContent='تنظیم پیشنهادی اعمال شد؛ نتیجه را بررسی کن.';saveProjectState(false)};
+document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{const p=b.dataset.p,v={natural:[0,8,3,0,0],cinematic:[-3,20,8,-3,4],warm:[6,10,10,16,2],night:[-12,16,-8,-8,5],vivid:[5,15,28,0,3],mono:[0,10,-100,0,2]}[p];['brightness','contrast','saturation','warmth','sharp'].forEach((id,i)=>{$(id).value=v[i];$('v'+({brightness:'B',contrast:'C',saturation:'S',warmth:'W',sharp:'H'}[id])).textContent=v[i]});if(img)render();saveProjectState(false);$('status').textContent='استایل '+b.textContent+' اعمال شد؛ نتیجه را بررسی کن.'});
+document.querySelectorAll('[data-tool]').forEach(b=>b.onclick=()=>{['adjust','filters','crop','speed','text','audio','lyrics','learn','director','generateVideo'].forEach(x=>$(x).hidden=true);$(b.dataset.tool).hidden=false;if(b.dataset.tool==='learn')showLesson()});
+$('undo').onclick=()=>{['brightness','contrast','saturation','warmth','sharp'].forEach(x=>$(x).value=0);['vB','vC','vS','vW','vH'].forEach(x=>$(x).textContent=0);if(img)render();saveProjectState(false);$('status').textContent='تنظیمات به حالت اولیه برگشت.'};
+$('new').onclick=()=>{if(confirm('پروژهٔ فعلی پاک شود؟ تنظیمات ذخیره‌شده در مرورگر هم پاک می‌شود.')){localStorage.removeItem('kohzin-studio-project');location.reload()}};
+$('export').onclick=async()=>{
+ if(img&&canvas){const a=document.createElement('a');a.download='KOHZIN-edited.jpg';a.href=canvas.toDataURL('image/jpeg',.96);a.click();$('status').textContent='عکس ویرایش‌شده ذخیره شد.';return}
+ if(!videoEl){alert('اول یک عکس یا ویدیو انتخاب کن.');return}
+ if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){alert('این مرورگر خروجی ویدیویی را پشتیبانی نمی‌کند. Chrome را به‌روز کن.');return}
+ if(rendering)return;
+ const v=videoEl;if(!v.videoWidth||!v.videoHeight){alert('صبر کن ویدیو کامل بارگذاری شود.');return}
+ rendering=true;const btn=$('export');btn.disabled=true;const oldLabel=btn.textContent;btn.textContent='در حال خروجی…';$('status').textContent='در حال ساخت ویدیوی WEBM؛ تا پایان این صفحه را نبند.';
+ let recorder,raf=0,stream=null,videoAudio=null,songAudio=null;
+ try{
+  const r=$('ratio').value,w=v.videoWidth,h=v.videoHeight;let cw=w,ch=h;
+  if(r==='9:16'){cw=Math.min(w,h*9/16);ch=cw*16/9}if(r==='16:9'){ch=Math.min(h,w*9/16);cw=ch*16/9}if(r==='1:1'){cw=ch=Math.min(w,h)}if(r==='4:5'){cw=Math.min(w,h*.8);ch=cw*1.25}
+  const out=document.createElement('canvas');out.width=Math.max(2,Math.round(cw));out.height=Math.max(2,Math.round(ch));const ctx=out.getContext('2d');
+  const draw=()=>{if(v.readyState>=2){const sx=(w-cw)/2,sy=(h-ch)/2,b=+$('brightness').value,c=+$('contrast').value,sat=+$('saturation').value,sharp=+$('sharp').value,heat=+$('warmth').value;ctx.clearRect(0,0,out.width,out.height);ctx.filter=`brightness(${100+b}%) contrast(${Math.max(1,100+c+sharp*.45)}%) saturate(${100+sat}%)`;ctx.drawImage(v,sx,sy,cw,ch,0,0,out.width,out.height);ctx.filter='none';if(heat!==0){ctx.save();ctx.globalCompositeOperation='soft-light';ctx.fillStyle=heat>0?`rgba(255,150,65,${Math.min(.22,heat/220)})`:`rgba(75,145,255,${Math.min(.22,Math.abs(heat)/220)})`;ctx.fillRect(0,0,out.width,out.height);ctx.restore()}
+   const txt=($('lyricsText').value.trim()||$('caption').value.trim());if(txt){const style=lyricStyles[activeLyricStyle]||lyricStyles.cinema;const lines=txt.split(/\n+/).flatMap(line=>{const words=line.split(/\s+/),arr=[];let cur='';for(const word of words){const test=cur?cur+' '+word:word;if(ctx.measureText(test).width>out.width*.86&&cur){arr.push(cur);cur=word}else cur=test}if(cur)arr.push(cur);return arr}).slice(0,8);ctx.save();ctx.direction='rtl';ctx.textAlign=$('lyricAlign').value||'center';ctx.textBaseline='middle';ctx.font=`${style.weight} ${Math.max(18,Math.min(+$('lyricSize').value||30,out.width/12))}px ${style.family}`;ctx.fillStyle=$('lyricColor').value||'#ffffff';ctx.shadowColor='#000';ctx.shadowBlur=8;ctx.lineWidth=3;ctx.strokeStyle='#111';const x=ctx.textAlign==='left'?out.width*.08:ctx.textAlign==='right'?out.width*.92:out.width/2;const lineH=Math.max(24,(+$('lyricSize').value||30)*1.35),startY=out.height*.78-(lines.length-1)*lineH/2;lines.forEach((line,i)=>{ctx.strokeText(line,x,startY+i*lineH,out.width*.88);ctx.fillText(line,x,startY+i*lineH,out.width*.88)});ctx.restore()}
+  }};
+  stream=out.captureStream(30);
+  try{if(v.captureStream){videoAudio=v.captureStream();videoAudio.getAudioTracks().forEach(t=>stream.addTrack(t))}}catch(e){}
+  const song=$('songPlayer');if(song&&song.src&&song.style.display!=='none'&&song.captureStream){try{songAudio=song.captureStream();songAudio.getAudioTracks().forEach(t=>stream.addTrack(t));song.currentTime=0;await song.play()}catch(e){}}
+  const mime=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(x=>MediaRecorder.isTypeSupported(x))||'';recorder=new MediaRecorder(stream,mime?{mimeType:mime}:undefined);const chunks=[];recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+  const finished=new Promise((resolve,reject)=>{recorder.onstop=resolve;recorder.onerror=()=>reject(new Error('ضبط ویدیو متوقف شد'))});
+  v.currentTime=0;await v.play();const frame=()=>{draw();if(!v.paused&&!v.ended)raf=requestAnimationFrame(frame)};draw();raf=requestAnimationFrame(frame);recorder.start(250);
+  await new Promise(resolve=>{v.onended=resolve;v.onerror=resolve});if(recorder.state!=='inactive')recorder.stop();await finished;cancelAnimationFrame(raf);if(songAudio&&$('songPlayer').pause)$('songPlayer').pause();
+  const blob=new Blob(chunks,{type:recorder.mimeType||'video/webm'});if(!blob.size)throw new Error('فایل خروجی خالی است');const link=document.createElement('a');const blobUrl=URL.createObjectURL(blob);link.href=blobUrl;link.download='KOHZIN-edited.webm';link.click();setTimeout(()=>URL.revokeObjectURL(blobUrl),60000);$('status').textContent='خروجی ویدیو آماده شد (WEBM). کیفیت و پخش را قبل از انتشار بررسی کن.';
+ }catch(e){$('status').textContent='خروجی ویدیو ناموفق بود: '+e.message+'؛ در بعضی گوشی‌ها ضبط ویدیو در پس‌زمینه محدود است.';try{if(recorder&&recorder.state!=='inactive')recorder.stop()}catch(_){} }
+ finally{if(raf)cancelAnimationFrame(raf);if(stream)stream.getTracks().forEach(t=>t.stop());if(videoAudio)videoAudio.getTracks().forEach(t=>t.stop());if(songAudio)songAudio.getTracks().forEach(t=>t.stop());rendering=false;btn.disabled=false;btn.innerHTML='<svg class="kicon"><use href="#i-send"/></svg> خروجی'}
+};
+function saveProjectState(showMessage=true){
+ const state={brightness:$('brightness').value,contrast:$('contrast').value,saturation:$('saturation').value,warmth:$('warmth').value,sharp:$('sharp').value,ratio:$('ratio').value,caption:$('caption').value,lyricsText:$('lyricsText').value,lyricSize:$('lyricSize').value,lyricColor:$('lyricColor').value,lyricAlign:$('lyricAlign').value,lyricLine:$('lyricLine').value,activeLyricStyle,updatedAt:new Date().toISOString()};
+ try{localStorage.setItem('kohzin-studio-project',JSON.stringify(state));if(showMessage)$('status').textContent='تنظیمات و متن‌ها روی همین دستگاه ذخیره شد. فایل عکس/ویدیو داخل ذخیرهٔ پروژه قرار نمی‌گیرد.';return true}catch(e){if(showMessage)$('status').textContent='ذخیره انجام نشد؛ حافظهٔ مرورگر در دسترس نیست.';return false}
+}
+function restoreProjectState(){try{const raw=localStorage.getItem('kohzin-studio-project');if(!raw)return;const st=JSON.parse(raw);for(const id of ['brightness','contrast','saturation','warmth','sharp','ratio','caption','lyricsText','lyricSize','lyricColor','lyricAlign','lyricLine'])if(st[id]!=null&&$(id))$(id).value=st[id];if(st.activeLyricStyle&&lyricStyles[st.activeLyricStyle]){activeLyricStyle=st.activeLyricStyle;document.querySelectorAll('[data-lyric-style]').forEach(b=>b.classList.toggle('active',b.dataset.lyricStyle===activeLyricStyle))}['brightness','contrast','saturation','warmth','sharp'].forEach((id,i)=>$('v'+({brightness:'B',contrast:'C',saturation:'S',warmth:'W',sharp:'H'}[id])).textContent=$(id).value);updateLyricPreview();$('captionPreview').textContent=$('caption').value||'پیش‌نمایش نوشتهٔ تو'}catch(e){}}
+$('save').onclick=()=>saveProjectState(true);
+restoreProjectState();
+
+
+$('audioFile').onchange=e=>{const f=e.target.files[0];if(!f)return;if(audioUrl)URL.revokeObjectURL(audioUrl);audioUrl=URL.createObjectURL(f);$('audioPreview').src=audioUrl;$('audioPreview').style.display='block';$('status').textContent='فایل صدا برای شنیدن آماده است؛ هنوز با ویدیو ترکیب نمی‌شود.'};
+$('songFile').onchange=e=>{const f=e.target.files[0];if(!f)return;if(songUrl)URL.revokeObjectURL(songUrl);songUrl=URL.createObjectURL(f);$('songPlayer').src=songUrl;$('songPlayer').style.display='block';$('lyricsStatus').textContent='آهنگ انتخاب شد. برای تبدیل خودکار بزن؛ نیازی به کلید شخصی نیست.'};
+$('transcribeLyrics').onclick=async()=>{const f=$('songFile').files[0];if(!f){alert('اول فایل آهنگ را انتخاب کن.');return}if(f.size>24*1024*1024){alert('حجم فایل باید کمتر از 24 مگابایت باشد.');return}const btn=$('transcribeLyrics');btn.disabled=true;btn.textContent='⏳ در حال تبدیل...';$('lyricsStatus').textContent='در حال ارسال امن فایل به سرور کوه‌زین؛ این کار ممکن است کمی طول بکشد...';try{const fd=new FormData();fd.append('file',f,f.name);fd.append('language',$('songLanguage').value);const res=await fetch(apiUrl('/api/transcribe'),{method:'POST',body:fd});const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.error||('خطای سرور: '+res.status));if(!data.text)throw new Error('متنی از سرویس دریافت نشد.');$('lyricsText').value=data.text;$('lyricsStatus').textContent='تبدیل تمام شد. متن را بررسی کن؛ مخصوصاً اسم‌ها، لهجه‌ها و کلمات موسیقی ممکن است اشتباه تشخیص داده شوند.';updateLyricPreview();saveProjectState(false)}catch(err){$('lyricsStatus').textContent='تبدیل انجام نشد: '+err.message+' — سرور امن کوه‌زین باید راه‌اندازی شده باشد.'}finally{btn.disabled=false;btn.innerHTML='<svg class="kicon"><use href="#i-music"/></svg> تبدیل خودکار به متن'}};
+// Live lyric typography: selectable looks, sizing, color, alignment, and clean line wrapping.
+let activeLyricStyle='cinema';
+const lyricStyles={
+ cinema:{family:'Tahoma,Arial,sans-serif',weight:900,shadow:'0 3px 15px #000,0 0 2px #000',stroke:'0px transparent',spacing:'0'},
+ bold:{family:'Arial,Tahoma,sans-serif',weight:900,shadow:'0 2px 8px #000',stroke:'0px transparent',spacing:'-.6px'},
+ elegant:{family:'Georgia,Tahoma,serif',weight:500,shadow:'0 2px 12px #000',stroke:'0px transparent',spacing:'0'},
+ neon:{family:'Arial,Tahoma,sans-serif',weight:900,shadow:'0 0 5px #c3b5ff,0 0 16px #8870ff,0 2px 8px #000',stroke:'0px transparent',spacing:'.2px'},
+ outline:{family:'Tahoma,Arial,sans-serif',weight:900,shadow:'0 2px 8px #000',stroke:'1.2px #17131f',spacing:'0'},
+ minimal:{family:'Tahoma,Arial,sans-serif',weight:500,shadow:'0 2px 9px #000',stroke:'0px transparent',spacing:'0'}
+};
+function updateLyricPreview(){
+ const raw=$('lyricsText').value.trim();const out=$('lyricPreviewText');
+ out.textContent=raw?( $('lyricLine').value==='auto' ? raw.split(/\n+/).flatMap(line=>{const words=line.trim().split(/\s+/);const lines=[];let current='';for(const word of words){const next=current?current+' '+word:word;if(next.length>30&&current){lines.push(current);current=word}else current=next}if(current)lines.push(current);return lines}).join('\n') : raw ):'متن آهنگ تو اینجا دیده می‌شود';
+ const st=lyricStyles[activeLyricStyle]||lyricStyles.cinema;
+ out.style.fontFamily=st.family;out.style.fontWeight=st.weight;out.style.textShadow=st.shadow;out.style.webkitTextStroke=st.stroke;out.style.letterSpacing=st.spacing;out.style.fontSize=$('lyricSize').value+'px';out.style.color=$('lyricColor').value;out.style.textAlign=$('lyricAlign').value;
+}
+document.querySelectorAll('[data-lyric-style]').forEach(b=>b.addEventListener('click',()=>{activeLyricStyle=b.dataset.lyricStyle;document.querySelectorAll('[data-lyric-style]').forEach(x=>x.classList.toggle('active',x===b));updateLyricPreview();saveProjectState(false)}));
+['lyricsText','lyricSize','lyricColor','lyricAlign','lyricLine'].forEach(id=>$(id).addEventListener(id==='lyricsText'?'input':'change',()=>{updateLyricPreview();saveProjectState(false)}));
+$('caption').addEventListener('input',()=>{$('captionPreview').textContent=$('caption').value||'پیش‌نمایش نوشتهٔ تو';saveProjectState(false)});
+updateLyricPreview();
+restoreProjectState();
+$('copyLyrics').onclick=async()=>{const t=$('lyricsText').value;if(!t.trim()){alert('اول متن را وارد کن.');return}try{await navigator.clipboard.writeText(t);$('lyricsStatus').textContent='متن کپی شد.'}catch(e){$('lyricsText').select();alert('متن انتخاب شد؛ گزینهٔ کپی را بزن.')}};
+
+let cameraStream=null,filmShots=[],shotIndex=-1,shotTimer=null;
+const filmShotLibrary={
+ story:[['هوک: چیزی که کنجکاوی ایجاد کند',3,'دوربین را ثابت نگه دار؛ از نمای نزدیک یا یک جزئیات عجیب شروع کن.'],['نمای باز برای معرفی مکان',4,'گوشی را با دو دست بگیر و آهسته کادر را نشان بده.'],['جزئیات مهم داستان',4,'از دست‌ها، وسیله یا جزئیات اصلی نمای نزدیک بگیر.'],['حرکت یا اتفاق اصلی',5,'یک حرکت ساده را کامل و بدون عجله ضبط کن.'],['نمای واکنش یا نتیجه',5,'روی نتیجه یا احساس صحنه مکث کن.'],['پایان واضح',4,'با نمای ثابت تمام کن؛ یک لحظه اضافه نگه دار.']],
+ nature:[['نمای باز طبیعت',4,'گوشی را افقی یا عمودی مطابق پروژه بگیر؛ حرکت بسیار آهسته باشد.'],['نمای متوسط از درخت، مسیر یا کوه',4,'یک سوژهٔ مشخص را در مرکز یا یک‌سوم کادر قرار بده.'],['جزئیات نزدیک: برگ، آب یا سنگ',4,'روی جزئیات تمرکز کن و دستت را ثابت نگه دار.'],['حرکت آرام دوربین',5,'فقط یک حرکت کوتاه چپ به راست انجام بده؛ سریع نچرخان.'],['صدای طبیعی محیط',5,'چند ثانیه بدون حرف‌زدن صدای محیط را ضبط کن.'],['نمای پایانی زیبا',4,'روی بهترین منظره مکث کن تا تدوین پایان نرم داشته باشد.']],
+ work:[['شروع کار یا آماده‌شدن',3,'از ابزار، دست‌ها یا کفش‌ها نمای نزدیک بگیر؛ لازم نیست چهره کسی دیده شود.'],['نمای باز محل کار',4,'محیط را امن و مرتب نشان بده؛ دوربین را ثابت نگه دار.'],['یک مرحله از کار',5,'از کنار بگیر تا حرکت دست‌ها و کار مشخص باشد.'],['جزئیات دست‌ها و ابزار',4,'نمای نزدیک بگیر؛ به سوژه نزدیک شو نه اینکه زوم دیجیتال کنی.'],['لحظهٔ تلاش یا پیشرفت',5,'یک کار واقعی را از ابتدا تا پایان کوتاه ثبت کن.'],['پایان روز یا نتیجه',4,'نتیجه را نشان بده و یک نمای ثابت برای پایان بگیر.']],
+ travel:[['نشانهٔ شروع مسیر',3,'تابلو یا نمایی که مکان را معرفی کند بگیر؛ اطلاعات خصوصی را نشان نده.'],['نمای مسیر',5,'گوشی را ثابت نگه دار؛ هنگام راه‌رفتن مراقب مسیر باش و در جای امن بایست.'],['جزئیات جالب',4,'یک نشانه، منظره یا وسیله را از نزدیک ثبت کن.'],['حرکت عبور یا رسیدن',5,'از نقطه‌ای امن، عبور یا رسیدن را ضبط کن.'],['نمای مقصد',5,'یک نمای باز از مقصد بگیر.'],['پایان مسیر',3,'روی مقصد مکث کن و ضبط را آرام تمام کن.']],
+ person:[['معرفی و قلاب گفتاری',4,'به لنز نگاه کن، نه صفحه؛ یک جملهٔ کوتاه بگو که موضوع را روشن کند.'],['اصل حرف',6,'یک نکته بگو؛ شمرده صحبت کن و بین جمله‌ها مکث کوتاه داشته باش.'],['مثال واقعی',6,'یک مثال یا تجربهٔ مشخص بگو؛ گوشی هم‌سطح چشم باشد.'],['نکتهٔ کاربردی',6,'یک پیشنهاد ساده و روشن بده.'],['جمع‌بندی',4,'در یک جمله نتیجه را بگو؛ صدا و تصویر را چند ثانیه نگه دار.']],
+ product:[['نمای معرفی وسیله',3,'وسیله را تمیز و در نور یکنواخت قرار بده.'],['نمای کامل',4,'تمام وسیله را داخل کادر نگه دار.'],['جزئیات مهم',5,'دو یا سه ویژگی را از نزدیک ضبط کن.'],['نحوهٔ استفاده',6,'استفادهٔ واقعی و ایمن را نشان بده.'],['نتیجه یا مزیت',5,'ویژگی اصلی را با یک مثال تصویری نشان بده.'],['نمای پایانی',3,'یک نمای واضح بگیر تا نام یا توضیح اضافه شود.']],
+ mood:[['نمای آرام و خلوت',5,'گوشی را ثابت بگیر؛ حرکت ناگهانی نداشته باش.'],['جزئیات احساسی',5,'روی قطرهٔ آب، آسمان، دست یا یک جزئیات معنادار تمرکز کن.'],['حرکت آهسته',5,'یک حرکت نرم و کوتاه انجام بده.'],['نمای طولانی‌تر',6,'حداقل چند ثانیه تصویر آرام ضبط کن تا موسیقی فرصت نفس‌کشیدن داشته باشد.'],['پایان امیدوارکننده',5,'نور، مسیر یا افق را برای پایان انتخاب کن.']],
+ viral:[['هوک سریع',2,'از همان لحظهٔ جالب شروع کن؛ مقدمهٔ طولانی نگذار.'],['نمای اصلی',3,'سوژه یا کار اصلی را واضح نشان بده.'],['سه جزئیات کوتاه',3,'سه نما ضبط کن؛ هرکدام حدود یک ثانیه در تدوین.'],['تغییر زاویه',3,'از زاویهٔ متفاوت همان موضوع را بگیر.'],['نتیجه یا غافلگیری',4,'بهترین لحظه را واضح نشان بده.'],['پایان سریع',2,'با یک تصویر قوی تمام کن.']]
+};
+function buildFilmPlan(){const goal=$('viewerGoal').value,style=$('filmStyle').value,platform=$('filmPlatform').value,total=+$('filmLength').value,level=$('filmLevel').value;let base=filmShotLibrary[goal]||filmShotLibrary.story;filmShots=base.map(x=>({title:x[0],sec:x[1],tip:x[2]}));
+ if(style==='talking'&&goal!=='person')filmShots=filmShotLibrary.person.map(x=>({title:x[0],sec:x[1],tip:x[2]}));
+ if(style==='slow'||style==='cinematic'){filmShots=filmShots.map(x=>({...x,sec:x.sec+1,tip:x.tip+(style==='cinematic'?' برای حس سینمایی، نور پشت سوژه و کادر تمیز را امتحان کن.':' برای حس آرام، حرکت را نرم و مکث را بیشتر کن.')}));}
+ if(level==='beginner')filmShots=filmShots.map(x=>({...x,tip:x.tip+' قبل از ضبط، یک بار بدون ضبط تمرین کن.'}));
+ const sum=filmShots.reduce((a,x)=>a+x.sec,0);let factor=total/sum;filmShots=filmShots.map(x=>({...x,sec:Math.max(2,Math.round(x.sec*factor))}));let delta=total-filmShots.reduce((a,x)=>a+x.sec,0);if(filmShots.length)filmShots[filmShots.length-1].sec+=delta;
+ const platformText={vertical:'عمودی 9:16؛ سوژه را وسط کادر نگه دار و فضای بالای سر را زیاد نکن.',youtube:'افقی 16:9؛ افق را صاف و فضای اطراف سوژه را حفظ کن.',square:'مربعی 1:1؛ سوژه را در مرکز نگه دار.'}[platform];
+ const styleNames={cinematic:'سینمایی',natural:'طبیعی',vlog:'ولاگ روزمره',documentary:'مستند',story:'داستان‌گویی',slow:'آرام و احساسی',dynamic:'پرتحرک',talking:'صحبت رو به دوربین'};
+ $('filmPlan').innerHTML='<b>برنامهٔ مخصوص تو</b><p>سبک: '+styleNames[style]+' · مدت هدف: '+total+' ثانیه</p><p>'+platformText+'</p><ol style="padding-right:22px">'+filmShots.map((x,i)=>'<li style="margin:10px 0"><b>'+x.title+' — '+x.sec+' ثانیه ضبط</b><br>'+x.tip+'</li>').join('')+'</ol><p>نکته: هر نما را ۱–۲ ثانیه بیشتر از مدت موردنیاز ضبط کن؛ بعداً بهترین قسمت را انتخاب می‌کنی. هنگام ضبط، گوشی را عمودی/افقی ثابت نگه دار و به اطراف و ایمنی توجه کن.</p>';
+ shotIndex=-1;$('nextShot').disabled=false;$('nextShot').textContent='<svg class="kicon"><use href="#i-camera"/></svg> شروع راهنمای نماها';$('shotCoach').textContent='برنامه آماده شد. وقتی آماده‌ای، شروع راهنمای نماها را بزن.';
+}
+$('makeFilmPlan').onclick=buildFilmPlan;
+$('startCamera').onclick=async()=>{try{cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});$('cameraPreview').srcObject=cameraStream;$('cameraPreview').style.display='block';$('shotCoach').textContent='دوربین روشن است. گوشی را ثابت بگیر و مطابق دستور هر نما ضبط کن. این پیش‌نمایش است؛ فایل ضبط‌شده به‌طور خودکار ذخیره نمی‌شود.'}catch(e){$('shotCoach').textContent=(e.name==='NotAllowedError'||e.name==='PermissionDeniedError'?'اجازهٔ دوربین رد شده است. در تنظیمات گوشی > برنامه‌ها > Chrome > مجوزها، دوربین را روی «فقط هنگام استفاده از برنامه» بگذار؛ سپس صفحه را تازه‌سازی کن. ':'دوربین باز نشد. آدرس باید HTTPS باشد و دوربین نباید در برنامهٔ دیگری مشغول باشد. ')+e.message}};
+$('stopCamera').onclick=()=>{if(cameraStream)cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;$('cameraPreview').srcObject=null;$('cameraPreview').style.display='none';$('shotCoach').textContent='دوربین خاموش شد.'};
+$('nextShot').onclick=()=>{if(!filmShots.length){buildFilmPlan();return}shotIndex++;if(shotIndex>=filmShots.length){$('shotCoach').innerHTML='<b>🎉 تمرین تمام شد!</b><p>حالا نماها را به ترتیب کنار هم بگذار، مکث‌های اضافی را حذف کن، بعد رنگ و موسیقی را اضافه کن.</p>';$('nextShot').textContent='↻ تمرین دوباره';shotIndex=-1;return}const x=filmShots[shotIndex];$('shotCoach').innerHTML='<b>نمای '+(shotIndex+1)+' از '+filmShots.length+': '+x.title+'</b><p style="font-size:22px;margin:6px 0">⏱ '+x.sec+' ثانیه</p><p>'+x.tip+'</p><p>۱) کادر را تنظیم کن. ۲) نفس آرام بکش و دستت را ثابت کن. ۳) ضبط را شروع کن و پس از زمان پیشنهادی متوقف کن. ۴) یک برداشت اضافه برای انتخاب بهتر بگیر.</p>';$('nextShot').textContent=shotIndex===filmShots.length-1?'نمای بعدی: پایان تمرین':'▶️ نمای بعدی'};
+
+const lessons={
+start:{title:'شروع پروژه',body:'۱) روی «انتخاب عکس یا ویدیو» بزن. ۲) فایل را از گوشی انتخاب کن. ۳) اول کادر و سپس نور و رنگ را تنظیم کن. تمرین: یک عکس روشن و واضح انتخاب کن.',action:'شروع با تنظیمات',run:()=>{$('adjust').hidden=false;$('learn').hidden=true;$('status').textContent='عکس را انتخاب کن و تنظیمات را امتحان کن.'}},
+light:{title:'نور و روشنایی',body:'روشنایی را کم‌کم تغییر بده؛ اگر تصویر خیلی سفید شد مقدار را پایین بیاور. برای سایه‌های تیره، کمی روشنایی اضافه کن. تمرین: عکس را انتخاب کن و روشنایی را روی +4 امتحان کن.',action:'اعمال تمرین نور',run:()=>{setVal('brightness',4,'vB');if(img)render()}},
+color:{title:'رنگ و کنتراست',body:'کنتراست تفاوت قسمت‌های روشن و تاریک را بیشتر می‌کند. اشباع رنگ را طبیعی نگه دار؛ زیاد کردن آن تصویر را غیرواقعی می‌کند. تمرین: کنتراست +12 و اشباع +6.',action:'اعمال تمرین رنگ',run:()=>{setVal('contrast',12,'vC');setVal('saturation',6,'vS');if(img)render()}},
+filter:{title:'فیلتر سینمایی',body:'از بخش «فیلتر» یک سبک انتخاب کن. Cinematic برای حس سینمایی، Natural برای ظاهر طبیعی و B&W برای سیاه‌وسفید است. تمرین: فیلتر Cinematic را انتخاب کن.',action:'بازکردن فیلترها',run:()=>{document.querySelector('[data-tool="filters"]').click()}},
+frame:{title:'کادر مناسب شبکه‌ها',body:'۹:۱۶ برای ریلز، تیک‌تاک و استوری؛ ۱۶:۹ برای ویدیوی افقی یوتیوب؛ ۱:۱ برای پست مربعی مناسب است. تمرین: کادر ۹:۱۶ را انتخاب کن.',action:'انتخاب کادر ۹:۱۶',run:()=>{document.querySelector('[data-tool="crop"]').click();$('ratio').value='9:16';if(img)render()}},
+text:{title:'متن روی کلیپ',body:'از ابزار متن متن کوتاه و خوانا انتخاب کن. این نسخه نمایهٔ متن را نشان می‌دهد اما چسباندن واقعی متن روی فایل ویدیویی هنوز فعال نیست. تمرین: بخش متن را باز کن و یک عنوان بنویس.',action:'بازکردن ابزار متن',run:()=>{document.querySelector('[data-tool="text"]').click();$('caption').focus()}},
+music:{title:'موسیقی و ریتم',body:'موسیقی را با حال‌وهوای تصویر هماهنگ کن و برش‌ها را نزدیک ضرب‌ها قرار بده. ابزار صدا در این نسخه انتخاب فایل را دارد؛ همگام‌سازی خودکار با ضرب هنوز اضافه نشده است.',action:'بازکردن ابزار صدا',run:()=>{document.querySelector('[data-tool="audio"]').click()}},
+export:{title:'خروجی گرفتن',body:'در نسخهٔ فعلی خروجی عکس ویرایش‌شده فعال است. خروجی نهایی ویدیو (MP4) هنوز پیاده‌سازی نشده است. برای عکس، ابتدا عکس را انتخاب و تنظیم کن، سپس «خروجی» را بزن.',action:'برگشت به تنظیمات',run:()=>{document.querySelector('[data-tool="adjust"]').click()}}
+};
+function showLesson(){const l=lessons[$('lessonSelect').value];$('lessonContent').innerHTML='<b>'+l.title+'</b><p>'+l.body+'</p>';$('lessonAction').textContent=l.action}
+function setVal(id,label,val){$(id).value=val;$(label).textContent=val}
+$('lessonSelect').onchange=showLesson;$('lessonAction').onclick=()=>{lessons[$('lessonSelect').value].run();$('lessonStatus').textContent='تمرین اجرا شد؛ اگر عکس انتخاب کرده‌ای نتیجه را بررسی کن.'};showLesson();
+const uiText={
+fa:{new:'پروژه جدید',export:'خروجی',learnTitle:'🎓 آموزش قدم‌به‌قدم ادیت',learnIntro:'یک درس انتخاب کن؛ دستورها را انجام بده و نتیجه را روی عکس تمرین کن.',lessonLabel:'درس آموزشی',lessons:['۱. شروع پروژه','۲. نور و روشنایی','۳. رنگ و کنتراست','۴. فیلتر سینمایی','۵. کادر مناسب شبکه‌ها','۶. متن روی کلیپ','۷. موسیقی و ریتم','۸. خروجی گرفتن']},
+en:{new:'New project',export:'Export',learnTitle:'🎓 Step-by-step editing lessons',learnIntro:'Choose a lesson, follow the steps, and practise on a photo.',lessonLabel:'Lesson',lessons:['1. Start a project','2. Light and brightness','3. Color and contrast','4. Cinematic filters','5. Social aspect ratios','6. Text on clips','7. Music and rhythm','8. Exporting']},
+ar:{new:'مشروع جديد',export:'تصدير',learnTitle:'🎓 دروس المونتاج خطوة بخطوة',learnIntro:'اختر درساً واتبع الخطوات وجرّب على صورة.',lessonLabel:'الدرس',lessons:['١. بدء المشروع','٢. الإضاءة والسطوع','٣. اللون والتباين','٤. الفلاتر السينمائية','٥. مقاسات المنصات','٦. النص على المقطع','٧. الموسيقى والإيقاع','٨. التصدير']},
+'tr':{new:'Yeni proje',export:'Dışa aktar',learnTitle:'🎓 Adım adım düzenleme dersleri',learnIntro:'Bir ders seç, adımları izle ve fotoğrafta dene.',lessonLabel:'Ders',lessons:['1. Projeye başla','2. Işık ve parlaklık','3. Renk ve kontrast','4. Sinematik filtre','5. Sosyal medya oranları','6. Klip üzerine yazı','7. Müzik ve ritim','8. Dışa aktarma']},
+ur:{new:'نیا پروجیکٹ',export:'ایکسپورٹ',learnTitle:'🎓 ایڈیٹنگ کی مرحلہ وار تعلیم',learnIntro:'سبق منتخب کریں، ہدایات پر عمل کریں اور تصویر پر مشق کریں۔',lessonLabel:'سبق',lessons:['۱. پروجیکٹ شروع کریں','۲. روشنی اور چمک','۳. رنگ اور کنٹراسٹ','۴. سنیما فلٹر','۵. سوشل میڈیا فریم','۶. کلپ پر متن','۷. موسیقی اور ردھم','۸. ایکسپورٹ']},
+hi:{new:'नया प्रोजेक्ट',export:'एक्सपोर्ट',learnTitle:'🎓 एडिटिंग सीखें: चरण-दर-चरण',learnIntro:'एक पाठ चुनें, निर्देश पढ़ें और फोटो पर अभ्यास करें।',lessonLabel:'पाठ',lessons:['1. प्रोजेक्ट शुरू करें','2. रोशनी और चमक','3. रंग और कंट्रास्ट','4. सिनेमैटिक फ़िल्टर','5. सोशल मीडिया फ्रेम','6. क्लिप पर टेक्स्ट','7. संगीत और ताल','8. एक्सपोर्ट']},
+az:{new:'Yeni layihə',export:'İxrac et',learnTitle:'🎓 Addım-addım montaj dərsləri',learnIntro:'Dərs seç, addımları izlə və fotoda məşq et.',lessonLabel:'Dərs',lessons:['1. Layihəyə başla','2. İşıq və parlaqlıq','3. Rəng və kontrast','4. Kino filtri','5. Sosial media ölçüləri','6. Klipə mətn','7. Musiqi və ritm','8. İxrac']}
+};
+$('uiLanguage').onchange=()=>{const lang=$('uiLanguage').value,t=uiText[lang]||uiText.fa;document.documentElement.lang=lang;document.documentElement.dir=['ar','ur','fa'].includes(lang)?'rtl':'ltr';$('new').textContent=t.new;$('export').textContent=t.export;$('learn').querySelector('h3').textContent=t.learnTitle;$('learn').querySelector('p.sub').textContent=t.learnIntro;$('learn').querySelector('label').textContent=t.lessonLabel;[...$('lessonSelect').options].forEach((o,i)=>o.textContent=t.lessons[i]);showLesson();};
+
+$('downloadLyrics').onclick=()=>{const t=$('lyricsText').value;if(!t.trim()){alert('اول متن را وارد کن.');return}const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain;charset=utf-8'}));a.download='KOHZIN-lyrics.txt';a.click();URL.revokeObjectURL(a.href)};
+
+// API address is a public URL only; secret provider keys stay on the server.
+function apiBase(){try{return (localStorage.getItem('kohzin-api-base')||'').trim().replace(/\/$/,'')}catch(_){return ''}}
+function apiUrl(path){return apiBase()+path}
+async function checkApiConnection(){
+ const status=$('generateVideoStatus');
+ try{
+  const r=await fetch(apiUrl('/api/health'),{method:'GET',cache:'no-store'});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok||!d.ok)throw new Error(d.error||'سرور پاسخ معتبر نداد.');
+  const features=[];if(d.videoConfigured)features.push('تولید ویدیو');if(d.chatConfigured)features.push('دستیار متنی');if(d.transcriptionConfigured)features.push('تبدیل آهنگ به متن');
+  status.textContent=features.length?'اتصال سرور برقرار است. فعال: '+features.join('، ')+'.':'سرور وصل است، اما کلیدهای لازم هنوز تنظیم نشده‌اند.';
+  status.style.color=features.includes('تولید ویدیو')?'#9ce7b1':'';
+ }catch(e){status.style.color='';status.textContent='سرور هوش مصنوعی وصل نیست. اگر سایت روی Droply به‌صورت فایل استاتیک میزبانی می‌شود، آدرس سرور Node.js را در کادر بالا وارد و ذخیره کن. '+(e.message||'')}
+}
+$('apiBaseUrl').value=apiBase();
+$('saveApiBase').onclick=async()=>{
+ const raw=$('apiBaseUrl').value.trim();
+ if(raw){try{const u=new URL(raw);if(!['https:','http:'].includes(u.protocol))throw new Error();localStorage.setItem('kohzin-api-base',u.origin)}catch(_){$('generateVideoStatus').textContent='آدرس معتبر وارد کن؛ مانند https://your-kohzin-api.example.com';return}}
+ else{localStorage.removeItem('kohzin-api-base')}
+ $('generateVideoStatus').textContent='در حال آزمایش اتصال…';await checkApiConnection();
+};
+checkApiConnection();
+
+// Text-to-video uses a real server-side generation endpoint; the browser never receives provider keys.
+$('generateVideoBtn').onclick=async()=>{
+ const prompt=$('videoPrompt').value.trim();
+ if(!prompt){$('generateVideoStatus').textContent='اول توضیح ویدیویی را بنویس.';return}
+ const btn=$('generateVideoBtn');btn.disabled=true;btn.textContent='در حال ساخت ویدیو…';$('generateVideoStatus').textContent='درخواست ارسال شد؛ ساخت ویدیو ممکن است چند دقیقه طول بکشد. این صفحه را باز نگه دار.';$('generatedVideoResult').hidden=true;
+ try{
+  const response=await fetch(apiUrl('/api/generate-video'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,aspect_ratio:$('genRatio').value,duration:Number($('genDuration').value),generate_audio:$('genAudio').checked,model:$('genModel').value})});
+  const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.error||'تولید ویدیو انجام نشد.');
+  if(!data.video_url)throw new Error('سرویس ویدیو آماده شد، اما لینک خروجی دریافت نشد.');
+  $('generatedVideoPlayer').pause();$('generatedVideoPlayer').removeAttribute('src');$('generatedVideoPlayer').load();$('generatedVideoPlayer').src=data.video_url;$('generatedVideoPlayer').onerror=()=>{$('generateVideoStatus').textContent='ویدیو تولید شد، اما پخش آن در این صفحه ناموفق بود؛ از لینک دریافت استفاده کن.'};$('generatedVideoDownload').href=data.video_url;$('generatedPromptText').textContent=data.final_prompt||prompt;$('generatedVideoResult').hidden=false;$('generateVideoStatus').textContent='ویدیوی ساخته‌شده آماده است. موتور: '+(data.model==='turbo'?'Kling V3 Turbo':'Kling V3 Standard')+'. پخش و صدا را بررسی کن؛ لینک سرویس ممکن است موقت باشد.';
+ }catch(err){$('generateVideoStatus').textContent='ویدیو ساخته نشد: '+err.message+' اگر سرویس روی سایت نصب نشده باشد یا کلیدها تنظیم نباشند، این خطا طبیعی است.'}
+ finally{btn.disabled=false;btn.textContent='✨ ساخت ویدیوی واقعی'}
+};
+
+// Voice conversation: chat endpoint is server-side; API key stays on the server.
+const voiceHistory=[];let recognition=null,isListening=false;
+const vq=id=>document.getElementById(id);
+function voiceStatus(s){vq('voiceStatus').textContent=s}
+function addVoiceMessage(role,text){const welcome=vq('voiceMessages').querySelector('.voice-welcome');if(welcome)welcome.remove();const el=document.createElement('div');el.className='voice-msg '+role;const body=document.createElement('div');body.textContent=text;el.appendChild(body);if(role==='assistant'){const speak=document.createElement('button');speak.className='speak-one';speak.type='button';speak.innerHTML='<svg class="kicon"><use href="#i-volume"/></svg> شنیدن پاسخ';speak.onclick=()=>speakKohzin(text);el.appendChild(speak)}vq('voiceMessages').appendChild(el);vq('voiceMessages').scrollTop=vq('voiceMessages').scrollHeight;return el}
+function speakKohzin(text){if(!('speechSynthesis' in window)){voiceStatus('این مرورگر پخش گفتار را پشتیبانی نمی‌کند.');return}const clean=String(text||'').trim();if(!clean){voiceStatus('متنی برای خواندن وجود ندارد.');return}window.speechSynthesis.cancel();const utter=new SpeechSynthesisUtterance(clean.slice(0,12000));const lang=vq('uiLanguage')?.value||'fa';utter.lang=({fa:'fa-IR',en:'en-US',ar:'ar-SA',tr:'tr-TR',ur:'ur-PK',hi:'hi-IN',az:'az-AZ'})[lang]||'fa-IR';const voices=window.speechSynthesis.getVoices();const voice=voices.find(v=>v.lang.toLowerCase().replace('_','-').startsWith(utter.lang.slice(0,2)));if(voice)utter.voice=voice;utter.rate=0.95;utter.onstart=()=>voiceStatus('در حال صحبت...');utter.onend=()=>voiceStatus('آمادهٔ گفت‌وگو');utter.onerror=()=>voiceStatus('پخش صدا انجام نشد؛ پاسخ را بخوان یا دوباره امتحان کن. ممکن است صدای این زبان روی گوشی نصب نباشد.');window.speechSynthesis.speak(utter)}
+async function sendVoiceMessage(text){text=text.trim();if(!text)return;vq('voiceInput').value='';addVoiceMessage('user',text);
+ // Route clear text-to-video requests to the real generator instead of returning only a text reply.
+ const asksForVideo=/(ویدیو|ویدیویی|کلیپ|فیلم)/i.test(text)&&/(بساز|ساخت|درست کن|ایجاد|تولید|میخواهم|می‌خواهم|میخوام|می‌خوام|در مورد|درباره|در حال)/i.test(text)||/(make|generate|create)\s+(me\s+)?(a\s+)?video/i.test(text);
+ if(asksForVideo){$('videoPrompt').value=text;$('generateVideo').hidden=false;['adjust','filters','crop','speed','text','audio','lyrics','learn','director'].forEach(x=>$(x).hidden=true);$('generateVideoStatus').textContent='درخواستت اینجا آماده است. برای جلوگیری از مصرف اعتبار ناخواسته، روی «ساخت ویدیوی واقعی» بزن تا تولید شروع شود.';voiceStatus('درخواست ویدیو آمادهٔ تولید است.');addVoiceMessage('assistant','فهمیدم؛ این درخواست باید به ویدیوی واقعی تبدیل شود، نه نوشته روی تصویر. درخواست را در بخش «ساخت ویدیو با هوش مصنوعی» گذاشتم. برای شروع تولید ویدیو، روی دکمهٔ «ساخت ویدیوی واقعی» بزن.');vq('voicePanel').classList.remove('open');return}
+ voiceHistory.push({role:'user',content:text});const waiting=addVoiceMessage('assistant','دارم فکر می‌کنم...');waiting.classList.add('typing');voiceStatus('در حال دریافت پاسخ از هوش مصنوعی...');vq('voiceForm').querySelector('[type=submit]').disabled=true;try{const response=await fetch(apiUrl('/api/chat'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:voiceHistory.slice(-12),language:vq('uiLanguage')?.value||'fa'})});const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.error||'اتصال به دستیار برقرار نشد.');const answer=String(data.reply||'').trim();if(!answer)throw new Error('پاسخی دریافت نشد.');waiting.remove();voiceHistory.push({role:'assistant',content:answer});addVoiceMessage('assistant',answer);voiceStatus('پاسخ آماده است. برای شنیدن، «شنیدن پاسخ» را بزن.')}catch(err){waiting.classList.remove('typing');waiting.querySelector('div').textContent='فعلاً پاسخ دریافت نشد: '+err.message;voiceStatus('اتصال سرور را بررسی کن.')}finally{vq('voiceForm').querySelector('[type=submit]').disabled=false}}
+vq('voiceLauncher').onclick=()=>{vq('voicePanel').classList.toggle('open');if(vq('voicePanel').classList.contains('open'))vq('voiceInput').focus()};vq('voiceClose').onclick=()=>{vq('voicePanel').classList.remove('open');if(isListening&&recognition)recognition.stop()};vq('voiceStop').onclick=()=>{if('speechSynthesis'in window)window.speechSynthesis.cancel();voiceStatus('پخش صدا متوقف شد.')};vq('voiceForm').onsubmit=e=>{e.preventDefault();sendVoiceMessage(vq('voiceInput').value)};vq('voiceInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();vq('voiceForm').requestSubmit()}});
+vq('voiceMic').onclick=()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){voiceStatus('تشخیص گفتار در این مرورگر در دسترس نیست؛ پیام را تایپ کن.');return}if(isListening&&recognition){recognition.stop();return}recognition=new SR();recognition.lang=({fa:'fa-IR',en:'en-US',ar:'ar-SA',tr:'tr-TR',ur:'ur-PK',hi:'hi-IN',az:'az-AZ'})[vq('uiLanguage')?.value||'fa']||'fa-IR';recognition.interimResults=true;recognition.continuous=false;let finalText='';recognition.onstart=()=>{isListening=true;vq('voiceMic').classList.add('active');voiceStatus('گوش می‌دهم... حالا صحبت کن. اگر خواسته شد، میکروفون را اجازه بده.');};recognition.onresult=e=>{let interim='';for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)finalText+=e.results[i][0].transcript;else interim+=e.results[i][0].transcript}vq('voiceInput').value=(finalText+' '+interim).trim()};recognition.onerror=e=>{voiceStatus(e.error==='not-allowed'?'اجازهٔ میکروفون داده نشد. از تنظیمات Chrome اجازه بده.':'تشخیص صدا ناموفق بود؛ دوباره تلاش کن یا تایپ کن.')};recognition.onend=()=>{isListening=false;vq('voiceMic').classList.remove('active');if(finalText.trim()){vq('voiceInput').value=finalText.trim();sendVoiceMessage(finalText.trim())}else if(vq('voiceInput').value.trim())voiceStatus('گفتار ثبت شد؛ دکمهٔ ارسال را بزن.');else voiceStatus('آمادهٔ گفت‌وگو')};try{recognition.start()}catch(e){voiceStatus('میکروفون در حال استفاده است؛ کمی صبر کن.')}};
+
+
+// PWA: cache the app shell only; API requests and user media are never cached.
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/pwabuilder-sw.js').catch(() => {}));
+}
+</script></body></html>
